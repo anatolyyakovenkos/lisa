@@ -1,3 +1,5 @@
+<img src="lisa-banner.png" alt="Lisa Logo" width="1000" />
+
 # Lisa Plugin
 
 **Lisa plans. Ralph does.**
@@ -94,3 +96,11 @@ The interview covers:
 - **Technical**: Data models, APIs, authentication, error handling
 - **UX**: User flows, edge cases, accessibility
 - **Trade-offs**: Performance, security, scalability, MVP scope
+
+##
+
+Built with ❤️ by [BLEN, Inc](https://www.blencorp.com).
+
+## About BLEN
+
+BLEN, Inc is a digital services company that provides Emerging Technology (ML/AI, RPA), Digital Modernization (Legacy to Cloud), and Human-Centered Web/Mobile Design and Development.
