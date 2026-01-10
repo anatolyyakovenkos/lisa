@@ -153,6 +153,15 @@ Base your next question on previous answers. If the user mentions something inte
 - Are there related features we should NOT touch?
 - What should Ralph ignore even if it seems relevant?
 
+**User Stories (CRITICAL - get this right):**
+- Break the feature into discrete user stories (US-1, US-2, etc.)
+- Each story MUST be completable in ONE focused coding session
+- If a story sounds too big, ask: "Can we break this into smaller stories?"
+- For each story, get VERIFIABLE acceptance criteria:
+  - BAD: "Works correctly", "Is fast", "Handles errors well"
+  - GOOD: "Returns 200 for valid input", "Shows error message for invalid email", "Response < 200ms"
+- Ask: "How would you verify this story is complete? What specific test would pass?"
+
 **Technical Implementation:**
 - Data models and storage (tables, fields, relationships)
 - API design (endpoints, methods, payloads, auth)
@@ -320,17 +329,23 @@ cat > "$DRAFT_PATH" << DRAFT_EOF
 
 ## User Stories
 
-<!-- Format each story with acceptance criteria:
+<!--
+IMPORTANT: Each story must be small enough to complete in ONE focused coding session.
+If a story is too large, break it into smaller stories.
+
+Format each story with VERIFIABLE acceptance criteria:
 
 ### US-1: [Story Title]
-**As a** [user type]
-**I want to** [action]
-**So that** [benefit]
+**Description:** As a [user type], I want [action] so that [benefit].
 
 **Acceptance Criteria:**
-- [ ] [Testable criterion 1]
-- [ ] [Testable criterion 2]
+- [ ] [Specific, verifiable criterion - e.g., "API returns 200 for valid input"]
+- [ ] [Another verifiable criterion - e.g., "Error message displayed for invalid email"]
+- [ ] Typecheck/lint passes
+- [ ] [If UI] Verify in browser
 
+BAD criteria (too vague): "Works correctly", "Is fast", "Handles errors"
+GOOD criteria: "Response time < 200ms", "Returns 404 for missing resource", "Form shows inline validation"
 -->
 
 [To be filled during interview]
@@ -357,9 +372,19 @@ cat > "$DRAFT_PATH" << DRAFT_EOF
 ## Requirements
 
 ### Functional Requirements
+<!--
+Use FR-IDs for each requirement:
+- FR-1: [Requirement description]
+- FR-2: [Requirement description]
+-->
 [To be filled during interview]
 
 ### Non-Functional Requirements
+<!--
+Performance, security, scalability requirements:
+- NFR-1: [Requirement - e.g., "Response time < 500ms for 95th percentile"]
+- NFR-2: [Requirement - e.g., "Support 100 concurrent users"]
+-->
 [To be filled during interview]
 
 ## Implementation Phases
