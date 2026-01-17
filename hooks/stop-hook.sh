@@ -4,7 +4,17 @@
 # Prevents session exit when a Lisa interview is active
 # Continues the interview until user says "done" or "finalize"
 
-set -euo pipefail
+set -uo pipefail
+
+# Cleanup trap for graceful error handling
+cleanup_on_error() {
+    local exit_code=$?
+    if [[ $exit_code -ne 0 ]]; then
+        echo "Warning: Lisa stop hook error (code: $exit_code)" >&2
+    fi
+    exit 0
+}
+trap cleanup_on_error EXIT
 
 # Read hook input from stdin
 HOOK_INPUT=$(cat)
@@ -30,7 +40,7 @@ DRAFT_PATH=$(echo "$FRONTMATTER" | grep '^draft_path:' | sed 's/draft_path: *//'
 # Validate iteration
 if [[ ! "$ITERATION" =~ ^[0-9]+$ ]]; then
   echo "Warning: Lisa state file corrupted (invalid iteration)" >&2
-  rm "$STATE_FILE"
+  rm -f "$STATE_FILE"
   exit 0
 fi
 
@@ -39,23 +49,43 @@ if [[ "$MAX_ITERATIONS" =~ ^[0-9]+$ ]] && [[ $MAX_ITERATIONS -gt 0 ]] && [[ $ITE
   echo "Lisa: Max questions ($MAX_ITERATIONS) reached."
   echo "   Draft spec saved at: $DRAFT_PATH"
   echo "   Run /finalize-spec to complete, or continue manually."
-  rm "$STATE_FILE"
+  rm -f "$STATE_FILE"
   exit 0
 fi
 
-# Get transcript path from hook input
-TRANSCRIPT_PATH=$(echo "$HOOK_INPUT" | jq -r '.transcript_path')
+# Validate HOOK_INPUT is not empty
+if [[ -z "$HOOK_INPUT" ]]; then
+    echo "Warning: Lisa hook received empty input" >&2
+    rm -f "$STATE_FILE"
+    exit 0
+fi
+
+# Validate JSON structure
+if ! echo "$HOOK_INPUT" | jq -e '.' >/dev/null 2>&1; then
+    echo "Warning: Lisa hook received malformed JSON" >&2
+    rm -f "$STATE_FILE"
+    exit 0
+fi
+
+# Get transcript path from hook input (with safe extraction)
+TRANSCRIPT_PATH=$(echo "$HOOK_INPUT" | jq -r '.transcript_path // empty' 2>/dev/null || echo "")
+
+if [[ -z "$TRANSCRIPT_PATH" ]] || [[ "$TRANSCRIPT_PATH" == "null" ]]; then
+    echo "Warning: Lisa hook missing transcript_path" >&2
+    rm -f "$STATE_FILE"
+    exit 0
+fi
 
 if [[ ! -f "$TRANSCRIPT_PATH" ]]; then
   echo "Warning: Lisa transcript not found" >&2
-  rm "$STATE_FILE"
+  rm -f "$STATE_FILE"
   exit 0
 fi
 
 # Check if there are any assistant messages
-if ! grep -q '"role":"assistant"' "$TRANSCRIPT_PATH"; then
+if ! grep -q '"role":"assistant"' "$TRANSCRIPT_PATH" 2>/dev/null; then
   echo "Warning: No assistant messages found in transcript" >&2
-  rm "$STATE_FILE"
+  rm -f "$STATE_FILE"
   exit 0
 fi
 
@@ -76,7 +106,7 @@ if [[ -n "$PROMISE_TEXT" ]] && [[ "$PROMISE_TEXT" = "SPEC COMPLETE" ]]; then
   echo "   Final spec saved to: $SPEC_PATH"
   echo "   Structured JSON:     $JSON_PATH"
   echo "   Progress file:       $PROGRESS_PATH"
-  rm "$STATE_FILE"
+  rm -f "$STATE_FILE"
   exit 0
 fi
 
@@ -102,7 +132,11 @@ if [[ -n "$USER_MESSAGES" ]]; then
 
     # Update iteration in state file
     TEMP_FILE="${STATE_FILE}.tmp.$$"
-    sed "s/^iteration: .*/iteration: $NEXT_ITERATION/" "$STATE_FILE" > "$TEMP_FILE"
+    if ! sed "s/^iteration: .*/iteration: $NEXT_ITERATION/" "$STATE_FILE" > "$TEMP_FILE" 2>/dev/null; then
+        echo "Warning: Failed to update state file" >&2
+        rm -f "$TEMP_FILE" "$STATE_FILE"
+        exit 0
+    fi
     mv "$TEMP_FILE" "$STATE_FILE"
 
     FINALIZE_PROMPT="The user has indicated they want to finalize the specification.
@@ -185,7 +219,11 @@ NEXT_ITERATION=$((ITERATION + 1))
 
 # Update iteration in state file
 TEMP_FILE="${STATE_FILE}.tmp.$$"
-sed "s/^iteration: .*/iteration: $NEXT_ITERATION/" "$STATE_FILE" > "$TEMP_FILE"
+if ! sed "s/^iteration: .*/iteration: $NEXT_ITERATION/" "$STATE_FILE" > "$TEMP_FILE" 2>/dev/null; then
+    echo "Warning: Failed to update state file" >&2
+    rm -f "$TEMP_FILE" "$STATE_FILE"
+    exit 0
+fi
 mv "$TEMP_FILE" "$STATE_FILE"
 
 # Extract the interview prompt from state file (everything after second ---)
@@ -193,7 +231,7 @@ PROMPT_TEXT=$(awk '/^---$/{i++; next} i>=2' "$STATE_FILE")
 
 if [[ -z "$PROMPT_TEXT" ]]; then
   echo "Warning: No prompt found in state file" >&2
-  rm "$STATE_FILE"
+  rm -f "$STATE_FILE"
   exit 0
 fi
 
