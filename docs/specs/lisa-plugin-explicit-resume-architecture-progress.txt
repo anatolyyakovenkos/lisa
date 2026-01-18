@@ -1,0 +1,27 @@
+## Implementation Progress: Lisa Plugin Explicit Resume Architecture
+
+### Phase 1: Remove Stop Hook [COMPLETE]
+- [x] Deleted stop hook registration from hooks/hooks.json
+- [x] Deleted hooks/stop-hook.sh
+- Verification: 0 references to stop hook remain, stop-hook.sh file removed
+- Completed: 2026-01-18
+
+### Phase 2: Update Plan Command [PENDING]
+- [ ] Update commands/plan.md with strong finalization constraints
+- [ ] Add tool restrictions to finalization (only Write/Read allowed)
+- [ ] Ensure interview runs as natural conversation within session
+- [ ] Implement 60-character slug limit in scripts/setup-lisa.sh
+- [ ] Change state file naming from .claude/lisa.local.md to .claude/lisa-{slug}.md
+
+### Phase 3: Add Resume Command [PENDING]
+- [ ] Create commands/resume.md
+- [ ] Implement logic to scan .claude/lisa-*.md files
+- [ ] Parse feature name and timestamp from each
+- [ ] Present list to user via AskUserQuestion
+- [ ] Load selected state and continue interview
+- [ ] Handle empty case with helpful message
+
+### Phase 4: Add Cleanup Command [PENDING]
+- [ ] Create commands/cleanup.md
+- [ ] Implement deletion of all .claude/lisa-*.md files
+- [ ] Show confirmation message
