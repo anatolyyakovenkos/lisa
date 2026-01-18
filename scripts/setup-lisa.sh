@@ -102,12 +102,13 @@ fi
 mkdir -p "$OUTPUT_DIR"
 mkdir -p .claude
 
-# Generate slug for filename
-FEATURE_SLUG=$(echo "$FEATURE_NAME" | tr '[:upper:]' '[:lower:]' | tr ' ' '-' | tr -cd '[:alnum:]-')
+# Generate slug for filename (max 60 characters per spec requirement)
+FEATURE_SLUG=$(echo "$FEATURE_NAME" | tr '[:upper:]' '[:lower:]' | tr ' ' '-' | tr -cd '[:alnum:]-' | cut -c1-60)
 SPEC_PATH="$OUTPUT_DIR/$FEATURE_SLUG.md"
 JSON_PATH="$OUTPUT_DIR/$FEATURE_SLUG.json"
 PROGRESS_PATH="$OUTPUT_DIR/$FEATURE_SLUG-progress.txt"
 DRAFT_PATH=".claude/lisa-draft.md"
+STATE_PATH=".claude/lisa-${FEATURE_SLUG}.md"
 TIMESTAMP=$(date +%Y-%m-%d)
 
 # Read context file if provided
@@ -290,8 +291,8 @@ SESSION_EOF
 INTERVIEW_PROMPT=$(cat "$PROMPT_FILE")
 rm "$PROMPT_FILE"
 
-# Write state file
-cat > .claude/lisa.local.md << STATE_EOF
+# Write state file (per-feature state file for resume support)
+cat > "$STATE_PATH" << STATE_EOF
 ---
 active: true
 iteration: 1
@@ -304,6 +305,7 @@ spec_path: "$SPEC_PATH"
 json_path: "$JSON_PATH"
 progress_path: "$PROGRESS_PATH"
 draft_path: "$DRAFT_PATH"
+state_path: "$STATE_PATH"
 context_file: "$CONTEXT_FILE"
 first_principles: $FIRST_PRINCIPLES
 ---
@@ -464,6 +466,7 @@ DRAFT_EOF
 echo "Lisa Plan - Interview Started"
 echo ""
 echo "Feature: $FEATURE_NAME"
+echo "State: $STATE_PATH"
 echo "Draft: $DRAFT_PATH"
 echo "Output: $SPEC_PATH"
 echo "JSON: $JSON_PATH"

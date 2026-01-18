@@ -119,7 +119,7 @@ The JSON output follows the [snarktank/ralph](https://github.com/snarktank/ralph
 
 ## How It Works
 
-1. **Initialization**: Creates state file (`.claude/lisa.local.md`) and draft spec (`.claude/lisa-draft.md`)
+1. **Initialization**: Creates state file (`.claude/lisa-{slug}.md`) and draft spec (`.claude/lisa-draft.md`)
 
 2. **Interview Loop**:
    - Claude asks probing questions using `AskUserQuestion` tool
@@ -190,13 +190,17 @@ During an interview:
 
 | File | Purpose |
 |------|---------|
-| `.claude/lisa.local.md` | Interview state (iteration count, paths, settings) |
+| `.claude/lisa-{slug}.md` | Interview state (iteration count, paths, settings) |
 | `.claude/lisa-draft.md` | Running draft spec updated throughout |
 
 ## Canceling an Interview
 
 ```bash
-rm .claude/lisa.local.md
+# Remove the state file for the specific feature (slug is derived from feature name)
+rm .claude/lisa-*.md
+
+# Or use the cleanup command
+/lisa:cleanup
 ```
 
 ## Complete Workflow: Lisa + Ralph

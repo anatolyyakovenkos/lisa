@@ -78,9 +78,13 @@ Claude: [Writes final spec to docs/specs/file-upload-feature.md]
 
 ## Canceling an Interview
 
-To cancel an active interview, delete the state file:
+To cancel an active interview, delete the state file or use the cleanup command:
 ```bash
-rm .claude/lisa.local.md
+# Remove all Lisa state files
+rm .claude/lisa-*.md
+
+# Or use the cleanup command
+/lisa:cleanup
 ```
 
 ## Using the Spec

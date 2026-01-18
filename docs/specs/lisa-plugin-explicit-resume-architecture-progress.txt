@@ -6,12 +6,15 @@
 - Verification: 0 references to stop hook remain, stop-hook.sh file removed
 - Completed: 2026-01-18
 
-### Phase 2: Update Plan Command [PENDING]
-- [ ] Update commands/plan.md with strong finalization constraints
-- [ ] Add tool restrictions to finalization (only Write/Read allowed)
-- [ ] Ensure interview runs as natural conversation within session
-- [ ] Implement 60-character slug limit in scripts/setup-lisa.sh
-- [ ] Change state file naming from .claude/lisa.local.md to .claude/lisa-{slug}.md
+### Phase 2: Update Plan Command [COMPLETE]
+- [x] Update commands/plan.md with strong finalization constraints
+- [x] Add tool restrictions to finalization (only Write/Read allowed)
+- [x] Ensure interview runs as natural conversation within session
+- [x] Implement 60-character slug limit in scripts/setup-lisa.sh
+- [x] Change state file naming from .claude/lisa.local.md to .claude/lisa-{slug}.md
+- [x] Updated README.md and help.md documentation
+- Verification: plan.md has FINALIZATION CONSTRAINTS section with forbidden actions
+- Completed: 2026-01-18
 
 ### Phase 3: Add Resume Command [PENDING]
 - [ ] Create commands/resume.md
