@@ -1,4 +1,4 @@
-<img src="lisa-banner.png" alt="Lisa Logo" width="1000" />
+<img src="lisa-bann.png" alt="Lisa Logo" width="1000" />
 
 # Lisa Plugin
 
